@@ -17,6 +17,7 @@ DTU_USART_INFO_T dtu_usart_info = {
  */
 void DTU_Enter_CMD(void)
 {
+    u1_printf("进入指令模式...\r\n");
     while(1)
     {
         u3_printf("+++");
@@ -46,6 +47,21 @@ void DTU_Exit_CMD(void)
 }
 
 /**
+ * @brief DTU向服务器发送数据
+ * 
+ * @param data 数据指针
+ * @param datalen 数据长度
+ * @return uint8_t 
+ */
+uint8_t DTU_SendData(uint8_t *data,uint16_t datalen)
+{
+    HAL_StatusTypeDef ret;
+    ret = HAL_UART_Transmit(&DTU_USART,data,datalen,0xffff);
+    if(ret == HAL_OK)   return 1;   //发送成功 
+    else return 0;                  //发送失败
+}
+
+/**
  * @brief DTU设置远程服务器
  * 
  */
@@ -57,13 +73,13 @@ void DTU_Set_Server(void)
     u3_printf("AT+SOCKAEN=ON\r\n");                 //开启SOCKA
     HAL_Delay(30);
 
-    u3_printf("AT+SOCKBEN=ON\r\n");                 //开启SOCKB
+    u3_printf("AT+SOCKBEN=OFF\r\n");                //关闭SOCKB
     HAL_Delay(30);
 
-    u3_printf("AT+SOCKCEN=ON\r\n");                 //开启SOCKC
+    u3_printf("AT+SOCKCEN=OFF\r\n");                //关闭SOCKC
     HAL_Delay(30);
     
-    u3_printf("AT+SOCKDEN=ON\r\n");                 //开启SOCKD
+    u3_printf("AT+SOCKDEN=OFF\r\n");                //关闭SOCKD
     HAL_Delay(30);
 
     u3_printf("AT+HEART=ON,NET,USER,60,C000\r\n");  //设置心跳
@@ -84,7 +100,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     //进入指令模式的应答
     if((datalen == 5) && !memcmp(data,"+ok\r\n",sizeof("+ok\r\n")))
     {
-        u1_printf("进入指令模式，设置服务器\r\n");
+        u1_printf("进入指令模式，设置服务器...\r\n");
 
         //服务器配置
         DTU_Set_Server();
@@ -96,14 +112,26 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     //退出指令模式的应答
     else if((datalen == 15) && !memcmp(data,"AT+ENTM\r\r\nOK\r\n",sizeof("AT+ENTM\r\r\nOK\r\n")))
     {
-        u1_printf("退出指令模式\r\n");
+        u1_printf("退出指令模式!\r\n");
     }
 
+    //配置服务器完成
     else if(!memcmp(data,"USR-DR152",sizeof("USR-DR152")))
     {
-        u1_printf("完成服务器配置\r\n");
-        u1_printf("开始Connect服务器\r\n");
+        u1_printf("Connect服务器...\r\n");
         MQTT_ConnectPack();
+    }
+
+    //接收到20 02 00 00代表Connect成功
+    else if((datalen == 4) && (data[0] == 0x20) && (data[1] == 0x02) && (data[2] == 0x00) && (data[3] == 0x00))
+    {
+        u1_printf("Connect服务器成功!\r\n");
+    }
+
+    //接收到d0 00 代表设备保活
+    else if((datalen == 2) && (data[0] == 0xd0) && (data[1] == 0x00))
+    {
+        u1_printf("设备存活!\r\n");
     }
 }
 

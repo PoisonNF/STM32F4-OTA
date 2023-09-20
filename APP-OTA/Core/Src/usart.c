@@ -24,6 +24,8 @@
 #include "stdarg.h"
 #include "stdio.h"
 #include "string.h"
+#include "dtu-4g.h"
+#include "stdlib.h"
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -182,7 +184,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspInit 1 */
-
+    /* 开始4g模块串口的空闲DMA接收 */
+	  dtu_usart_info.ucpDMARxCache = (uint8_t *)malloc(dtu_usart_info.usDMARxMAXSize);	//申请缓冲区
+	  HAL_UART_Receive_DMA(&DTU_USART, dtu_usart_info.ucpDMARxCache, dtu_usart_info.usDMARxMAXSize);
+	  __HAL_UART_ENABLE_IT(&DTU_USART, UART_IT_IDLE);
   /* USER CODE END USART3_MspInit 1 */
   }
 }

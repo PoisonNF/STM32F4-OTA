@@ -3,6 +3,7 @@
 #include "usart.h"
 #include "string.h"
 #include "mqtt.h"
+#include "dtu-4g.h"
 
 MQTT_CB Aliyun_mqtt;
 
@@ -57,7 +58,14 @@ void MQTT_ConnectPack(void)
     Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 15 + strlen(CLIENTID) + strlen(USERNAME)] = strlen(PASSWORD)%256;
     memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 16 + strlen(CLIENTID) + strlen(USERNAME)],PASSWORD,strlen(PASSWORD));
 
-    for(int i = 0;i < (Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len);i++)
-        u1_printf("%02x ",Aliyun_mqtt.Pack_buff[i]);
+    //测试输出数据
+    // for(int i = 0;i < (Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len);i++)
+    //     u1_printf("%02x ",Aliyun_mqtt.Pack_buff[i]);
+    //HAL_UART_Transmit(&DTU_USART,Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len,0xffff);
+
+    /* 使用DTU发送Connect报文给服务器 */
+    if(DTU_SendData(Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len))
+        u1_printf("Connect报文发送成功,等待服务器回应\r\n");
+
 }
 

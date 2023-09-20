@@ -96,10 +96,6 @@ int main(void)
 	MX_USART1_UART_Init();
 	MX_USART3_UART_Init();
 	/* USER CODE BEGIN 2 */
-	/* 开始4g模块串口的空闲DMA接收 */
-	dtu_usart_info.ucpDMARxCache = malloc(dtu_usart_info.usDMARxMAXSize);	//申请缓冲区
-	HAL_UART_Receive_DMA(&DTU_USART, dtu_usart_info.ucpDMARxCache, dtu_usart_info.usDMARxMAXSize);
-	__HAL_UART_ENABLE_IT(&DTU_USART, UART_IT_IDLE);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -130,10 +126,10 @@ int main(void)
 			memcpy(DataBuf,dtu_usart_info.ucpDMARxCache,dtu_usart_info.usDMARxLength);
 			DataLen = dtu_usart_info.usDMARxLength;
 
-			// for(int i = 0;i<DataLen;i++)
-			// 	u1_printf("%02x ",DataBuf[i]);
-			// u1_printf("\r\n");
-			u1_printf("%s",DataBuf);
+			for(int i = 0;i<DataLen;i++)
+			 	u1_printf("%02x ",DataBuf[i]);
+			 u1_printf("\r\n");
+			//u1_printf("%s",DataBuf);
 			//u1_printf("%d\r\n",DataLen);
 
 			//处理DTU数据

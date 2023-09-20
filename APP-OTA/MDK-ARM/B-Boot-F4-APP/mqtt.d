@@ -33,3 +33,4 @@ b-boot-f4-app\mqtt.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 b-boot-f4-app\mqtt.o: ../Core/Inc/usart.h
 b-boot-f4-app\mqtt.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 b-boot-f4-app\mqtt.o: ..\OTA\inc\mqtt.h
+b-boot-f4-app\mqtt.o: ..\OTA\inc\dtu-4g.h

@@ -27,6 +27,8 @@ void DTU_Enter_CMD(void);
 
 void DTU_Exit_CMD(void);
 
+uint8_t DTU_SendData(uint8_t *data, uint16_t datalen);
+
 void DTU_Set_Server(void);
 
 void DTU_Usart_Event(uint8_t *data, uint16_t datalen);
