@@ -14,7 +14,9 @@
             "xstring": "c",
             "xutility": "c",
             "stdio.h": "c",
-            "stdarg.h": "c"
+            "stdarg.h": "c",
+            "string.h": "c",
+            "stdint.h": "c"
         },
         "files.encoding": "gb2312"
     },

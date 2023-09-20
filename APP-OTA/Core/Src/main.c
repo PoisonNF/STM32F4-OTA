@@ -129,9 +129,13 @@ int main(void)
 			//数据拷贝
 			memcpy(DataBuf,dtu_usart_info.ucpDMARxCache,dtu_usart_info.usDMARxLength);
 			DataLen = dtu_usart_info.usDMARxLength;
+
+			// for(int i = 0;i<DataLen;i++)
+			// 	u1_printf("%02x ",DataBuf[i]);
+			// u1_printf("\r\n");
 			u1_printf("%s",DataBuf);
-			u1_printf("%d\r\n",DataLen);
-			
+			//u1_printf("%d\r\n",DataLen);
+
 			//处理DTU数据
 			DTU_Usart_Event(DataBuf,DataLen);
 		}

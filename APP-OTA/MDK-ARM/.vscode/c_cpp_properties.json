@@ -90,7 +90,8 @@
                 "__yield()=",
                 "__vfp_status(x,y)=0"
             ],
-            "intelliSenseMode": "${default}"
+            "intelliSenseMode": "${default}",
+            "configurationProvider": "cl.eide"
         }
     ],
     "version": 4

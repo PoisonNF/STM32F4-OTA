@@ -4,6 +4,9 @@
 /* DTU使用的串口 */
 #define DTU_USART huart3
 
+/* 远程服务器配置 */
+#define SERVER_CONFIG	"TCP,iot-060a70tq.mqtt.iothub.aliyuncs.com,1883"
+
 /* DTU串口信息结构体 */
 typedef struct {
 
@@ -23,6 +26,8 @@ extern DTU_USART_INFO_T dtu_usart_info;
 void DTU_Enter_CMD(void);
 
 void DTU_Exit_CMD(void);
+
+void DTU_Set_Server(void);
 
 void DTU_Usart_Event(uint8_t *data, uint16_t datalen);
 
