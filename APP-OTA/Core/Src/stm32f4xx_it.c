@@ -253,13 +253,13 @@ void USART1_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
-	if((__HAL_UART_GET_FLAG(&DTU_4G_USART,UART_FLAG_IDLE) != RESET))  
+	if((__HAL_UART_GET_FLAG(&DTU_USART,UART_FLAG_IDLE) != RESET))  
 	{   
 		/* 清除中断标记 */
-		__HAL_UART_CLEAR_IDLEFLAG(&DTU_4G_USART); 
+		__HAL_UART_CLEAR_IDLEFLAG(&DTU_USART); 
 
 		/* 停止DMA接收 */
-		HAL_UART_DMAStop(&DTU_4G_USART);  
+		HAL_UART_DMAStop(&DTU_USART);  
 
 		/* 总数据量减去未接收到的数据量为已经接收到的数据量 */
     dtu_usart_info.usDMARxLength = dtu_usart_info.usDMARxMAXSize - __HAL_DMA_GET_COUNTER(&hdma_usart3_rx);
@@ -268,10 +268,10 @@ void USART3_IRQHandler(void)
 		dtu_usart_info.ucDMARxCplt = 1;
 
 		/* 重新启动DMA接收 */
-		HAL_UART_Receive_DMA(&DTU_4G_USART,dtu_usart_info.ucpDMARxCache,dtu_usart_info.usDMARxMAXSize);  
+		HAL_UART_Receive_DMA(&DTU_USART,dtu_usart_info.ucpDMARxCache,dtu_usart_info.usDMARxMAXSize);  
 	}
   /* USER CODE END USART3_IRQn 0 */
-  HAL_UART_IRQHandler(&DTU_4G_USART);
+  HAL_UART_IRQHandler(&DTU_USART);
   /* USER CODE BEGIN USART3_IRQn 1 */
 
   /* USER CODE END USART3_IRQn 1 */

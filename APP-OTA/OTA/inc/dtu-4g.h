@@ -1,27 +1,30 @@
 #ifndef __DTU_4G_H_
 #define __DTU_4G_H_
 
-#define DTU_4G_USART huart3
+/* DTUÊ¹ÓÃµÄ´®¿Ú */
+#define DTU_USART huart3
 
-/* ä¸²å£æ¥æ”¶ç»“æ„ä½“ */
+/* DTU´®¿ÚĞÅÏ¢½á¹¹Ìå */
 typedef struct {
 
-    /* DMAç›¸å…³ä¿¡æ¯ */
-	uint16_t			usDMARxLength;			/* DMAæ€»æ¥æ”¶æ•°æ®é•¿åº¦(DMAä½¿ç”¨) */
-	uint16_t			usDMARxMAXSize;			/* DMAæ¥æ”¶ç¼“å†²åŒºå¤§å°(DMAä½¿ç”¨) */
-	uint8_t				*ucpDMARxCache;			/* DMAæ¥æ”¶ç¼“å†²åŒº(DMAä½¿ç”¨) */
+    /* DMAÏà¹ØĞÅÏ¢ */
+	uint16_t			usDMARxLength;			/* DMA×Ü½ÓÊÕÊı¾İ³¤¶È(DMAÊ¹ÓÃ) */
+	uint16_t			usDMARxMAXSize;			/* DMA½ÓÊÕ»º³åÇø´óĞ¡(DMAÊ¹ÓÃ) */
+	uint8_t				*ucpDMARxCache;			/* DMA½ÓÊÕ»º³åÇø(DMAÊ¹ÓÃ) */
 
-	/* æ ‡å¿—ä½ä¿¡æ¯ */
-	uint8_t				ucDMARxCplt;			/* DMAæ¥æ”¶å®Œæˆæ ‡å¿—(DMAä½¿ç”¨) */
+	/* ±êÖ¾Î»ĞÅÏ¢ */
+	uint8_t				ucDMARxCplt;			/* DMA½ÓÊÕÍê³É±êÖ¾(DMAÊ¹ÓÃ) */
 }DTU_USART_INFO_T;
 
 
 /* å£°æ˜ */
 extern DTU_USART_INFO_T dtu_usart_info;
 
-void DTU_Set_ServerInfo(void);
+void DTU_Enter_CMD(void);
 
-void DTU_USART_Event(uint8_t *data, uint16_t datalen);
+void DTU_Exit_CMD(void);
+
+void DTU_Usart_Event(uint8_t *data, uint16_t datalen);
 
 #endif // !__DTU-4G_H_
 

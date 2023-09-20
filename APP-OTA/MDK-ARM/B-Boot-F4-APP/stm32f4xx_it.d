@@ -31,3 +31,4 @@ b-boot-f4-app\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 b-boot-f4-app\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 b-boot-f4-app\stm32f4xx_it.o: ../Core/Inc/stm32f4xx_it.h
 b-boot-f4-app\stm32f4xx_it.o: ../Core/Inc/ymodem.h
+b-boot-f4-app\stm32f4xx_it.o: ..\OTA\inc\dtu-4g.h

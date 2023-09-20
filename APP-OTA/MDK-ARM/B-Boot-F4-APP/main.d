@@ -34,3 +34,6 @@ b-boot-f4-app\main.o: ../Core/Inc/usart.h
 b-boot-f4-app\main.o: ../Core/Inc/gpio.h
 b-boot-f4-app\main.o: ../Core/Inc/ymodem.h
 b-boot-f4-app\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+b-boot-f4-app\main.o: ..\OTA\inc\dtu-4g.h
+b-boot-f4-app\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+b-boot-f4-app\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

@@ -70,7 +70,7 @@ void SystemClock_Config(void);
 int main(void)
 {
 	/* USER CODE BEGIN 1 */
-	SCB->VTOR = FLASH_BASE | BootLoader_Size; /* 鏇存敼涓?鏂?鍚戦噺琛ㄥ湴鍧? */
+	SCB->VTOR = FLASH_BASE | BootLoader_Size; /* 修改中断向量表 */
 	__enable_irq();
 	/* USER CODE END 1 */
 
@@ -98,24 +98,23 @@ int main(void)
 	/* USER CODE BEGIN 2 */
 	/* 开始4g模块串口的空闲DMA接收 */
 	dtu_usart_info.ucpDMARxCache = malloc(dtu_usart_info.usDMARxMAXSize);	//申请缓冲区
-	HAL_UART_Receive_DMA(&DTU_4G_USART, dtu_usart_info.ucpDMARxCache, dtu_usart_info.usDMARxMAXSize);
-	__HAL_UART_ENABLE_IT(&DTU_4G_USART, UART_IT_IDLE);
-
-	/* 设置服务器信息 */
-	DTU_Set_ServerInfo();
-
+	HAL_UART_Receive_DMA(&DTU_USART, dtu_usart_info.ucpDMARxCache, dtu_usart_info.usDMARxMAXSize);
+	__HAL_UART_ENABLE_IT(&DTU_USART, UART_IT_IDLE);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	printf("\r\n");
-	printf("***********************************\r\n");
-	printf("*                                 *\r\n");
-	printf("*      B-Boot-F4's Application    *\r\n");
-	printf("*          For the test           *\r\n");
-	printf("*         Version :  0.1          *\r\n");
-	printf("*                                 *\r\n");
-	printf("***********************************\r\n");
+	u1_printf("\r\n");
+	u1_printf("***********************************\r\n");
+	u1_printf("*                                 *\r\n");
+	u1_printf("*      B-Boot-F4's Application    *\r\n");
+	u1_printf("*          For the test           *\r\n");
+	u1_printf("*         Version :  0.1          *\r\n");
+	u1_printf("*                                 *\r\n");
+	u1_printf("***********************************\r\n");
+
+	/* 进入指令模式，设置服务器信息 */
+	DTU_Enter_CMD();
 	while (1)
 	{
 		/* USER CODE END WHILE */
@@ -130,9 +129,11 @@ int main(void)
 			//数据拷贝
 			memcpy(DataBuf,dtu_usart_info.ucpDMARxCache,dtu_usart_info.usDMARxLength);
 			DataLen = dtu_usart_info.usDMARxLength;
+			u1_printf("%s",DataBuf);
+			u1_printf("%d\r\n",DataLen);
 			
-			//处理数据
-			DTU_USART_Event(DataBuf,DataLen);
+			//处理DTU数据
+			DTU_Usart_Event(DataBuf,DataLen);
 		}
 	}
 	/* USER CODE END 3 */
@@ -214,7 +215,7 @@ void assert_failed(uint8_t *file, uint32_t line)
 {
 	/* USER CODE BEGIN 6 */
 	/* User can add his own implementation to report the file name and line number,
-	   ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	   ex: u1_printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 	/* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

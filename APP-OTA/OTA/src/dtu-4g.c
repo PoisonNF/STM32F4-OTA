@@ -5,30 +5,69 @@
 #include "dtu-4g.h"
 #include "mqtt.h"
 
-/* å®šä¹‰ä¸€ä¸ªä¸²å£DMAæ•°æ®æ¥æ”¶ç»“æ„ä½“ */
+/* ¶¨ÒåÒ»¸ö´®¿ÚDMAÊı¾İ½ÓÊÕ½á¹¹Ìå */
 DTU_USART_INFO_T dtu_usart_info = {
     .usDMARxMAXSize = 256,
     .ucDMARxCplt = 0,
 }; 
 
-void DTU_Printf(const uint8_t *data,uint16_t datalen)
+/**
+ * @brief DTU½øÈëÖ¸ÁîÄ£Ê½
+ * 
+ */
+void DTU_Enter_CMD(void)
 {
-    HAL_UART_Transmit(&DTU_4G_USART,data,datalen,1000);
-}
+    while(1)
+    {
+        u3_printf("+++");
+        HAL_Delay(1000);
 
-void DTU_Set_ServerInfo(void)
-{
-    DTU_Printf("+++",sizeof("+++"));
+        /* µÈ´ıDTU»ØÓ¦'a' */
+        if(dtu_usart_info.ucDMARxCplt)
+		{
+			dtu_usart_info.ucDMARxCplt = 0;	//±êÖ¾Î»ÇåÁã
+            if(dtu_usart_info.ucpDMARxCache[0] == 'a')
+            {
+                u1_printf("ÍË³öÍ¸´«Ä£Ê½\r\n");
+                u3_printf("a"); //»Ø¸´DTU
+                break;
+            }
+        }   
+    }
 }
 
 /**
- * @brief å¤„ç†DTUçš„ä¸²å£å¾—åˆ°çš„æ•°æ®
+ * @brief DTUÍË³öÖ¸ÁîÄ£Ê½
  * 
- * @param data æ•°æ®æŒ‡é’ˆ
- * @param datalen æ•°æ®é•¿åº¦
  */
-void DTU_USART_Event(uint8_t *data,uint16_t datalen)
+void DTU_Exit_CMD(void)
 {
+    u3_printf("AT+ENTM\r\n");
+}
 
+/**
+ * @brief ´¦ÀíDTUµÄ´®¿ÚµÃµ½µÄÊı¾İ
+ * 
+ * @param data Êı¾İÖ¸Õë
+ * @param datalen Êı¾İ³¤¶È
+ */
+void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
+{
+    //½øÈëÖ¸ÁîÄ£Ê½µÄÓ¦´ğ
+    if((datalen == 5) && !memcmp(data,"+ok\r\n",sizeof("+ok\r\n")))
+    {
+        u1_printf("½øÈëÖ¸ÁîÄ£Ê½£¬ÉèÖÃ·şÎñÆ÷\r\n");
+
+        //·şÎñÆ÷ÅäÖÃ
+
+        //ÍË³öCMDÄ£Ê½
+        DTU_Exit_CMD();
+    }
+
+    //ÍË³öÖ¸ÁîÄ£Ê½µÄÓ¦´ğ
+    else if((datalen == 15) && !memcmp(data,"AT+ENTM\r\n\r\nOK\r\n",sizeof("AT+ENTM\r\n\r\nOK\r\n")))
+    {
+        u1_printf("ÍË³öÖ¸ÁîÄ£Ê½\r\n");
+    }
 }
 

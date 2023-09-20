@@ -13,7 +13,8 @@
             "ymodem.h": "c",
             "xstring": "c",
             "xutility": "c",
-            "stdio.h": "c"
+            "stdio.h": "c",
+            "stdarg.h": "c"
         },
         "files.encoding": "gb2312"
     },

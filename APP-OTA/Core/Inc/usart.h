@@ -37,6 +37,12 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN Private defines */
+//串口1重定向
+static uint8_t USART1_TX_BUF[200];
+#define u1_printf(...)  HAL_UART_Transmit(&huart1,USART1_TX_BUF,sprintf((char *)USART1_TX_BUF,__VA_ARGS__),0xffff)
+//串口3重定向                                                                                                                                                                  
+static uint8_t USART3_TX_BUF[200];
+#define u3_printf(...)  HAL_UART_Transmit(&huart3,USART3_TX_BUF,sprintf((char *)USART3_TX_BUF,__VA_ARGS__),0xffff)
 
 /* USER CODE END Private defines */
 
