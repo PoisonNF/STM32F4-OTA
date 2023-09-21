@@ -7,13 +7,19 @@
 
 /* MQTT控制结构体 */
 typedef struct{
-    uint8_t     Pack_buff[512];
-    uint8_t     CMD_buff[512];
-    uint16_t    MessageID;
+    //报文配置
+    uint8_t     Pack_buff[512];     //设备到服务器的Buffer
+    uint8_t     CMD_buff[512];      //服务器到设备的Buffer
+    uint16_t    MessageID;          //报文标识符
     uint16_t    Fixed_len;          //固定报头长度
     uint16_t    Variable_len;       //可变报头长度
     uint16_t    Payload_len;        //负载报文长度
     uint16_t    Remaining_len;      //剩余长度
+
+    //OTA信息
+    int size;                       //固件包大小
+    int streamId;                   //固件包ID
+    uint8_t OTA_VerTemp[10];        //版本号临时存放
 }MQTT_CB;
 
 extern MQTT_CB Aliyun_mqtt;
@@ -32,6 +38,8 @@ void MQTT_PublishDataQos0(char *topic,char *data);
 void MQTT_PublishDataQos1(char *topic,char *data);
 
 void MQTT_SendOTAVersion(void);
+
+void MQTT_GetOTAInfo(char *data);
 
 #endif // !__MQTT_H_
 

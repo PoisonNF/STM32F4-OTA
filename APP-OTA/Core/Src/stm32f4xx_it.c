@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "ymodem.h"
 #include "dtu-4g.h"
+#include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -262,13 +263,13 @@ void USART3_IRQHandler(void)
 		HAL_UART_DMAStop(&DTU_USART);  
 
 		/* 总数据量减去未接收到的数据量为已经接收到的数据量 */
-    dtu_usart_info.usDMARxLength = dtu_usart_info.usDMARxMAXSize - __HAL_DMA_GET_COUNTER(&hdma_usart3_rx);
+    usart_info.usDMARxLength = usart_info.usDMARxMAXSize - __HAL_DMA_GET_COUNTER(&hdma_usart3_rx);
 
 		/* 接收标志位置1 */
-		dtu_usart_info.ucDMARxCplt = 1;
+		usart_info.ucDMARxCplt = 1;
 
 		/* 重新启动DMA接收 */
-		HAL_UART_Receive_DMA(&DTU_USART,dtu_usart_info.ucpDMARxCache,dtu_usart_info.usDMARxMAXSize);  
+		HAL_UART_Receive_DMA(&DTU_USART,usart_info.ucpDMARxCache,usart_info.usDMARxMAXSize);  
 	}
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&DTU_USART);

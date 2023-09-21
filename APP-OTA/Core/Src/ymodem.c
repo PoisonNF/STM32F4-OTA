@@ -4,10 +4,6 @@
 #include "usart.h"
 #include "string.h"
 
-uint8_t Rx_Flag;
-uint16_t Rx_Len;
-uint8_t Rx_Buf[Rx_Max];
-
 /**
  * @brief 串口重定向（需要开启Use MicroLIB）
  * @param ch  		发送的数据
@@ -194,13 +190,13 @@ void YModem_Update(void)
 		Send_Command(CCC);
 		HAL_Delay(1000);
 	}
-	if(Rx_Flag)    	// Receive flag
+	if(usart_info.ucDMARxCplt)    	// Receive flag
 	{
-		Rx_Flag = 0;	// clean flag
+		usart_info.ucDMARxCplt = 0;	// clean flag
 				
 		/* 拷贝 */
-		Temp_Len = Rx_Len;
-        memcpy(Temp_Buf,Rx_Buf,Temp_Len);
+		Temp_Len = usart_info.usDMARxLength;
+        memcpy(Temp_Buf,usart_info.ucpDMARxCache,Temp_Len);
 		
 		switch(Temp_Buf[0])
 		{

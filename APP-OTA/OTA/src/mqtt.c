@@ -155,7 +155,7 @@ void MQTT_DealPublishData(uint8_t *data,uint16_t datalen)
     uint8_t i;
 
     //通过与0x80相与，判断剩余长度的位数
-    for(i = 0;i < 5;i++)
+    for(i = 1;i < 5;i++)
     {
         if((data[i] & 0x80) == 0)
             break;
@@ -243,4 +243,20 @@ void MQTT_SendOTAVersion(void)
     memset(temp,0,128);
     sprintf(temp,"{\"id\": \"1\",\"params\": {\"version\": \"%s\"}}",VERSION);
     MQTT_PublishDataQos1("/ota/device/inform/k08lcwgm0Ts/MQTTtest",temp);
+}
+
+void MQTT_GetOTAInfo(char *data)
+{
+    if(sscanf(data,"/ota/device/upgrade/k08lcwgm0Ts/MQTTtest{\"code\":\"1000\",\"data\":{\"size\":%d,\"streamId\":%d,\"sign\":\"%*32s\",\"dProtocol\"  \
+        :\"mqtt\",\"version\":\"%3s\",\"signMethod\":\"Md5\",\"streamFileId\":1,\"md5\":\"%*32s\"},\"id\":%*d,\"message\":\"success\"}",
+        &Aliyun_mqtt.size,&Aliyun_mqtt.streamId,Aliyun_mqtt.OTA_VerTemp) == 3)
+    {
+        u1_printf("OTA固件大小:%d\r\n",Aliyun_mqtt.size);
+        u1_printf("OTA固件ID:%d\r\n",Aliyun_mqtt.streamId);
+        u1_printf("OTA固件版本:%s\r\n",Aliyun_mqtt.OTA_VerTemp);
+    }
+    else
+    {
+        u1_printf("提取OTA下载命令失败!\r\n");
+    }
 }

@@ -5,12 +5,6 @@
 #include "dtu-4g.h"
 #include "mqtt.h"
 
-/* 定义一个串口DMA数据接收结构体 */
-DTU_USART_INFO_T dtu_usart_info = {
-    .usDMARxMAXSize = 500,
-    .ucDMARxCplt = 0,
-}; 
-
 /* 用于标记是否连接上服务器 */
 static uint8_t Connect_Status = 0; 
 
@@ -27,10 +21,10 @@ void DTU_Enter_CMD(void)
         HAL_Delay(1000);
 
         /* 等待DTU回应'a' */
-        if(dtu_usart_info.ucDMARxCplt)
+        if(usart_info.ucDMARxCplt)
 		{
-			dtu_usart_info.ucDMARxCplt = 0;	//标志位清零
-            if(dtu_usart_info.ucpDMARxCache[0] == 'a')
+			usart_info.ucDMARxCplt = 0;	//标志位清零
+            if(usart_info.ucpDMARxCache[0] == 'a')
             {
                 u1_printf("退出透传模式\r\n");
                 u3_printf("a"); //回复DTU
@@ -131,10 +125,11 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
         u1_printf("收到CONNACK!\r\n");
         if(data[3] == 0x00){
             u1_printf("Connect服务器成功!\r\n");
-            Connect_Status= 1;
+            Connect_Status= 1;      //连接成功标志位
             MQTT_SubscribePack("/k08lcwgm0Ts/MQTTtest/user/get");
+            MQTT_SubscribePack("/ota/device/upgrade/k08lcwgm0Ts/MQTTtest");
             HAL_Delay(500);
-            MQTT_SendOTAVersion();
+            MQTT_SendOTAVersion();  //发送当前OTA的版本
         }else{
             u1_printf("Connect服务器失败!\r\n");
             NVIC_SystemReset();
@@ -178,6 +173,8 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
             u1_printf("打开开关\r\n");
             MQTT_PublishDataQos0("/k08lcwgm0Ts/MQTTtest/user/post","{\"params\":}{\"switch1\":1}");
         }
+
+        MQTT_GetOTAInfo((char*)Aliyun_mqtt.CMD_buff);
     }
 
     //接收到PUBACK报文（QoS1）

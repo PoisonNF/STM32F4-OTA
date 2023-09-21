@@ -44,6 +44,20 @@ static uint8_t USART1_TX_BUF[200];
 static uint8_t USART3_TX_BUF[200];
 #define u3_printf(...)  HAL_UART_Transmit(&huart3,USART3_TX_BUF,sprintf((char *)USART3_TX_BUF,__VA_ARGS__),0xffff)
 
+/* DTU串口信息结构体 */
+typedef struct {
+
+    /* DMA相关信息 */
+	uint16_t			usDMARxLength;			/* DMA总接收数据长度(DMA使用) */
+	uint16_t			usDMARxMAXSize;			/* DMA接收缓冲区大小(DMA使用) */
+	uint8_t				*ucpDMARxCache;			/* DMA接收缓冲区(DMA使用) */
+
+	/* 标志位信息 */
+	uint8_t				ucDMARxCplt;			/* DMA接收完成标志(DMA使用) */
+}USART_INFO_T;
+
+extern USART_INFO_T usart_info;
+
 /* USER CODE END Private defines */
 
 void MX_USART1_UART_Init(void);
