@@ -11,6 +11,9 @@ DTU_USART_INFO_T dtu_usart_info = {
     .ucDMARxCplt = 0,
 }; 
 
+/* 用于标记是否连接上服务器 */
+static uint8_t Connect_Status = 0; 
+
 /**
  * @brief DTU进入指令模式
  * 
@@ -122,14 +125,69 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
         MQTT_ConnectPack();
     }
 
-    //接收到20 02 00 00代表Connect成功
-    else if((datalen == 4) && (data[0] == 0x20) && (data[1] == 0x02) && (data[2] == 0x00) && (data[3] == 0x00))
+    //接收到CONNACK报文
+    else if((datalen == 4) && (data[0] == 0x20))
     {
-        u1_printf("Connect服务器成功!\r\n");
+        u1_printf("收到CONNACK!\r\n");
+        if(data[3] == 0x00){
+            u1_printf("Connect服务器成功!\r\n");
+            Connect_Status= 1;
+            MQTT_SubscribePack("/k08lcwgm0Ts/MQTTtest/user/get");
+            HAL_Delay(500);
+            MQTT_SendOTAVersion();
+        }else{
+            u1_printf("Connect服务器失败!\r\n");
+            NVIC_SystemReset();
+        }
+    }
+
+    //接收到SUBACK报文
+    else if(Connect_Status &&(datalen == 5) && (data[0] == 0x90))
+    {
+        u1_printf("收到SUBACK!\r\n");
+
+        //如果最后一个字节为0x00或者0x01代表发送成功
+        if((data[datalen-1] == 0x00) || (data[datalen-1] == 0x01)){
+            u1_printf("Subscribe报文成功!\r\n");
+            //MQTT_UnSubscribePack("/sys/k08lcwgm0Ts/MQTTtest/thing/service/property/set");
+        }else{
+            u1_printf("Subscribe报文失败!\r\n");
+            NVIC_SystemReset();
+        }
+    }
+
+    //接收到UNSUBACK报文
+    else if(Connect_Status && (data[0] == 0xB0) && data[1] == 0x02)
+    {
+        u1_printf("收到UNSUBACK!\r\n");
+        u1_printf("UnSubscribe报文成功!\r\n");
+    }
+
+    //接收到等级0的Publish报文
+    else if(Connect_Status && (data[0] == 0x30))
+    {
+        u1_printf("收到等级0的Publish报文!\r\n");
+        MQTT_DealPublishData(data,datalen);
+        if(strstr((const char*)Aliyun_mqtt.CMD_buff,"{\"switch1\":0}"))
+        {
+            u1_printf("关闭开关\r\n");
+            MQTT_PublishDataQos0("/k08lcwgm0Ts/MQTTtest/user/post","{\"params\":}{\"switch1\":0}");
+        }
+        if(strstr((const char*)Aliyun_mqtt.CMD_buff,"{\"switch1\":1}"))
+        {
+            u1_printf("打开开关\r\n");
+            MQTT_PublishDataQos0("/k08lcwgm0Ts/MQTTtest/user/post","{\"params\":}{\"switch1\":1}");
+        }
+    }
+
+    //接收到PUBACK报文（QoS1）
+    else if(Connect_Status && (data[0] == 0x40))
+    {
+        u1_printf("收到PUBACK!\r\n");
     }
 
     //接收到d0 00 代表设备保活
-    else if((datalen == 2) && (data[0] == 0xd0) && (data[1] == 0x00))
+    else if(Connect_Status && (datalen == 2) && (data[0] == 0xd0) && (data[1] == 0x00))
     {
         u1_printf("设备存活!\r\n");
     }

@@ -8,6 +8,24 @@
 MQTT_CB Aliyun_mqtt;
 
 /**
+ * @brief MQTT剩余长度字节数判断处理
+ * 
+ */
+static void MQTT_Remaining_Len_Process(void)
+{
+    //判断剩余长度是一个字节还是两个字节
+    do{
+        if(Aliyun_mqtt.Remaining_len/128 == 0)
+            Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len] = Aliyun_mqtt.Remaining_len;
+        else
+            Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len] = (Aliyun_mqtt.Remaining_len%128) | 0x80;
+
+        Aliyun_mqtt.Fixed_len++;
+        Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Remaining_len/128;
+    }while(Aliyun_mqtt.Remaining_len);
+}
+
+/**
  * @brief MQTT的Connect报文
  * 
  */
@@ -20,18 +38,10 @@ void MQTT_ConnectPack(void)
     Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
 
     /* 固定报头 */
-    Aliyun_mqtt.Pack_buff[0] = 0x10;    //connect报头
+    Aliyun_mqtt.Pack_buff[0] = 0x10;    //Connect报头
 
     //判断剩余长度是一个字节还是两个字节
-    do{
-        if(Aliyun_mqtt.Remaining_len/128 == 0)
-            Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len] = Aliyun_mqtt.Remaining_len;
-        else
-            Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len] = (Aliyun_mqtt.Remaining_len%128) | 0x80;
-
-        Aliyun_mqtt.Fixed_len++;
-        Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Remaining_len/128;
-    }while(Aliyun_mqtt.Remaining_len);
+    MQTT_Remaining_Len_Process();
 
     /* 可变报头 */
     Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 0] = 0x00;
@@ -69,3 +79,168 @@ void MQTT_ConnectPack(void)
 
 }
 
+/**
+ * @brief MQTT的Subscribe报文
+ * 
+ */
+void MQTT_SubscribePack(char *topic)
+{
+    Aliyun_mqtt.Fixed_len = 1;
+    Aliyun_mqtt.Variable_len = 2;
+    Aliyun_mqtt.Payload_len = 2 + strlen(topic) + 1;   //其中的2都表示为长度,1代表服务质量等级
+    Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
+
+    /* 固定报头 */
+    Aliyun_mqtt.Pack_buff[0] = 0x82;    //Subscrib报头
+
+    //判断剩余长度是一个字节还是两个字节
+    MQTT_Remaining_Len_Process();
+
+    /* 可变报头 */
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 0] = Aliyun_mqtt.MessageID/256;
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 1] = Aliyun_mqtt.MessageID%256;
+    Aliyun_mqtt.MessageID++;
+
+    /* 有效负载 */
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 2] = strlen(topic)/256;
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 3] = strlen(topic)%256;
+    memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 4],topic,strlen(topic));
+
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 4 + strlen(topic)] = 0;   //服务质量等级为0
+
+    if(DTU_SendData(Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len))
+        u1_printf("Subscribe报文发送成功,等待服务器回应\r\n");
+}
+
+/**
+ * @brief MQTT的UnSubscribe报文
+ * 
+ * @param topic 订阅的标题
+ */
+void MQTT_UnSubscribePack(char *topic)
+{
+    Aliyun_mqtt.Fixed_len = 1;
+    Aliyun_mqtt.Variable_len = 2;
+    Aliyun_mqtt.Payload_len = 2 + strlen(topic);
+    Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
+
+    /* 固定报头 */
+    Aliyun_mqtt.Pack_buff[0] = 0xA0;    //UnSubscrib报头
+
+    //判断剩余长度是一个字节还是两个字节
+    MQTT_Remaining_Len_Process();
+
+    /* 可变报头 */
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 0] = Aliyun_mqtt.MessageID/256;
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 1] = Aliyun_mqtt.MessageID%256;
+    Aliyun_mqtt.MessageID++;
+
+    /* 有效负载 */
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 2] = strlen(topic)/256;
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 3] = strlen(topic)%256;
+    memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 4],topic,strlen(topic));
+
+    if(DTU_SendData(Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len))
+        u1_printf("UnSubscribe报文发送成功,等待服务器回应\r\n");
+}
+
+/**
+ * @brief MQTT的处理Publish报文（等级0）
+ * 
+ * @param data 数据指针
+ * @param datalen 数据长度
+ */
+void MQTT_DealPublishData(uint8_t *data,uint16_t datalen)
+{
+    uint8_t i;
+
+    //通过与0x80相与，判断剩余长度的位数
+    for(i = 0;i < 5;i++)
+    {
+        if((data[i] & 0x80) == 0)
+            break;
+    }
+
+    memset(Aliyun_mqtt.CMD_buff,0,512);
+    memcpy(Aliyun_mqtt.CMD_buff,&data[1+i+2],datalen-1-i-2);
+
+}
+
+/**
+ * @brief MQTT的发送Publish报文（等级0）
+ * 
+ * @param topic 订阅的标题
+ * @param data 发送的数据
+ */
+void MQTT_PublishDataQos0(char *topic,char *data)
+{
+    Aliyun_mqtt.Fixed_len = 1;
+    Aliyun_mqtt.Variable_len = 2 + strlen(topic);   //等级0没有报文标识符
+    Aliyun_mqtt.Payload_len = strlen(data);
+    Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
+
+    /* 固定报头 */
+    Aliyun_mqtt.Pack_buff[0] = 0x30;    //PublishQs0报头
+
+    //判断剩余长度是一个字节还是两个字节
+    MQTT_Remaining_Len_Process();
+
+    /* 可变报头 */
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 0] = strlen(topic)/256;
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 1] = strlen(topic)%256;
+    memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 2],topic,strlen(topic));
+
+    /* 有效负载 */
+    memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 2 + strlen(topic)],data,strlen(data));
+
+    if(DTU_SendData(Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len))
+        u1_printf("PublishQs0报文发送成功!\r\n");
+}
+
+/**
+ * @brief MQTT的发送Publish报文（等级1）
+ * 
+ * @param topic 订阅的标题
+ * @param data 发送的数据
+ */
+void MQTT_PublishDataQos1(char *topic,char *data)
+{
+    Aliyun_mqtt.Fixed_len = 1;
+    Aliyun_mqtt.Variable_len = 2 + strlen(topic) + 2;
+    Aliyun_mqtt.Payload_len = strlen(data);
+    Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
+
+    /* 固定报头 */
+    Aliyun_mqtt.Pack_buff[0] = 0x32;    //PublishQos1报头
+
+    //判断剩余长度是一个字节还是两个字节
+    MQTT_Remaining_Len_Process();
+
+    /* 可变报头 */
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 0] = strlen(topic)/256;
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 1] = strlen(topic)%256;
+    memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 2],topic,strlen(topic));
+
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 2 + strlen(topic)] = Aliyun_mqtt.MessageID/256;
+    Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 3 + strlen(topic)] = Aliyun_mqtt.MessageID%256;
+    Aliyun_mqtt.MessageID++;
+
+    /* 有效负载 */
+    memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 4 + strlen(topic)],data,strlen(data));
+
+    if(DTU_SendData(Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len))
+        u1_printf("PublishQs1报文发送成功!\r\n");
+}
+
+/**
+ * @brief 发送当前OTA版本号
+ * 
+ */
+void MQTT_SendOTAVersion(void)
+{
+    char temp[128];
+
+    memset(temp,0,128);
+    sprintf(temp,"{\"id\": \"1\",\"params\": {\"version\": \"%s\"}}",VERSION);
+    MQTT_PublishDataQos1("/ota/device/inform/k08lcwgm0Ts/MQTTtest",temp);
+}

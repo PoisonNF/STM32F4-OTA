@@ -8,6 +8,7 @@
 /* MQTT控制结构体 */
 typedef struct{
     uint8_t     Pack_buff[512];
+    uint8_t     CMD_buff[512];
     uint16_t    MessageID;
     uint16_t    Fixed_len;          //固定报头长度
     uint16_t    Variable_len;       //可变报头长度
@@ -15,8 +16,22 @@ typedef struct{
     uint16_t    Remaining_len;      //剩余长度
 }MQTT_CB;
 
+extern MQTT_CB Aliyun_mqtt;
+
 
 void MQTT_ConnectPack(void);
+
+void MQTT_SubscribePack(char *topic);
+
+void MQTT_UnSubscribePack(char *topic);
+
+void MQTT_DealPublishData(uint8_t *data,uint16_t datalen);
+
+void MQTT_PublishDataQos0(char *topic,char *data);
+
+void MQTT_PublishDataQos1(char *topic,char *data);
+
+void MQTT_SendOTAVersion(void);
 
 #endif // !__MQTT_H_
 

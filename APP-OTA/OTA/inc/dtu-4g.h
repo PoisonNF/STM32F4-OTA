@@ -20,7 +20,7 @@ typedef struct {
 }DTU_USART_INFO_T;
 
 
-/* å£°æ˜Ž */
+/* ÉùÃ÷ */
 extern DTU_USART_INFO_T dtu_usart_info;
 
 void DTU_Enter_CMD(void);

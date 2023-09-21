@@ -105,7 +105,7 @@ int main(void)
 	u1_printf("*                                 *\r\n");
 	u1_printf("*      B-Boot-F4's Application    *\r\n");
 	u1_printf("*          For the test           *\r\n");
-	u1_printf("*         Version :  0.1          *\r\n");
+	u1_printf("*         Version :  %s         *\r\n",VERSION);
 	u1_printf("*                                 *\r\n");
 	u1_printf("***********************************\r\n");
 
