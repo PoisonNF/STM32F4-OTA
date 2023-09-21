@@ -17,7 +17,8 @@
             "stdarg.h": "c",
             "string.h": "c",
             "stdint.h": "c",
-            "stm32f4xx_it.h": "c"
+            "stm32f4xx_it.h": "c",
+            "stm32f4xx_hal.h": "c"
         },
         "files.encoding": "gb2312"
     },

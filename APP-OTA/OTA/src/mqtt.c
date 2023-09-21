@@ -194,7 +194,7 @@ void MQTT_PublishDataQos0(char *topic,char *data)
     memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 2 + strlen(topic)],data,strlen(data));
 
     if(DTU_SendData(Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len))
-        u1_printf("PublishQs0报文发送成功!\r\n");
+        u1_printf("PublishQos0报文发送成功!\r\n");
 }
 
 /**
@@ -229,7 +229,7 @@ void MQTT_PublishDataQos1(char *topic,char *data)
     memcpy(&Aliyun_mqtt.Pack_buff[Aliyun_mqtt.Fixed_len + 4 + strlen(topic)],data,strlen(data));
 
     if(DTU_SendData(Aliyun_mqtt.Pack_buff,Aliyun_mqtt.Fixed_len + Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len))
-        u1_printf("PublishQs1报文发送成功!\r\n");
+        u1_printf("PublishQos1报文发送成功!\r\n");
 }
 
 /**
@@ -245,6 +245,11 @@ void MQTT_SendOTAVersion(void)
     MQTT_PublishDataQos1("/ota/device/inform/k08lcwgm0Ts/MQTTtest",temp);
 }
 
+/**
+ * @brief 获取OTA固件信息
+ * 
+ * @param data 从服务器过来的报文
+ */
 void MQTT_GetOTAInfo(char *data)
 {
     if(sscanf(data,"/ota/device/upgrade/k08lcwgm0Ts/MQTTtest{\"code\":\"1000\",\"data\":{\"size\":%d,\"streamId\":%d,\"sign\":\"%*32s\",\"dProtocol\"  \
@@ -254,9 +259,32 @@ void MQTT_GetOTAInfo(char *data)
         u1_printf("OTA固件大小:%d\r\n",Aliyun_mqtt.size);
         u1_printf("OTA固件ID:%d\r\n",Aliyun_mqtt.streamId);
         u1_printf("OTA固件版本:%s\r\n",Aliyun_mqtt.OTA_VerTemp);
+
+        //计算下载总量
+        if(Aliyun_mqtt.size%256 == 0){
+            Aliyun_mqtt.counter = Aliyun_mqtt.size/256;
+        }else{
+            Aliyun_mqtt.counter = Aliyun_mqtt.size/256 + 1;
+        }
+        //初始化
+        Aliyun_mqtt.num = 1;
+        Aliyun_mqtt.downlen = 256;
+        MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1)*256);
     }
-    else
-    {
-        u1_printf("提取OTA下载命令失败!\r\n");
-    }
+}
+
+/**
+ * @brief OTA分片下载
+ * 
+ * @param size 分片下载大小
+ * @param offset 地址偏移
+ */
+void MQTT_OTA_Download(int size,int offset)
+{
+    char temp[256];
+    memset(temp,0,256);
+    sprintf(temp,"{\"id\": \"1\",\"params\": {\"fileInfo\":{\"streamId\":%d,\"fileId\":1},\"fileBlock\":{\"size\":%d,\"offset\":%d}}}",Aliyun_mqtt.streamId,size,offset);
+    u1_printf("当前第%d/%d次\r\n",Aliyun_mqtt.num,Aliyun_mqtt.counter);
+    MQTT_PublishDataQos0("/sys/k08lcwgm0Ts/MQTTtest/thing/file/download",temp);
+    HAL_Delay(300);
 }

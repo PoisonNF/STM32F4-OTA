@@ -393,11 +393,6 @@
           <GroupName>Application/User/Core</GroupName>
           <Files>
             <File>
-              <FileName>ymodem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\ymodem.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>
@@ -536,6 +531,11 @@
               <FileName>mqtt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\OTA\src\mqtt.c</FilePath>
+            </File>
+            <File>
+              <FileName>ymodem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\OTA\src\ymodem.c</FilePath>
             </File>
           </Files>
         </Group>

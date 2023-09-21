@@ -51,9 +51,6 @@
                   },
                   {
                     "path": "../Core/Src/usart.c"
-                  },
-                  {
-                    "path": "../Core/Src/ymodem.c"
                   }
                 ],
                 "folders": []
@@ -139,6 +136,9 @@
           },
           {
             "path": "../OTA/src/mqtt.c"
+          },
+          {
+            "path": "../OTA/src/ymodem.c"
           }
         ],
         "folders": []

@@ -4,6 +4,7 @@
 #include "string.h"
 #include "dtu-4g.h"
 #include "mqtt.h"
+#include "ymodem.h"
 
 /* 用于标记是否连接上服务器 */
 static uint8_t Connect_Status = 0; 
@@ -14,11 +15,22 @@ static uint8_t Connect_Status = 0;
  */
 void DTU_Enter_CMD(void)
 {
+    uint8_t i = 5;
+
     u1_printf("进入指令模式...\r\n");
     while(1)
     {
         u3_printf("+++");
+        u1_printf("剩余%ds...\r\n",i);
         HAL_Delay(1000);
+        i--;
+
+        /* 如果发送5次还是没应答则退出循环 */
+        if(i == 0) 
+        {
+            u1_printf("进入指令模式失败!\r\n");
+            break;
+        }
 
         /* 等待DTU回应'a' */
         if(usart_info.ucDMARxCplt)
@@ -127,8 +139,11 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
             u1_printf("Connect服务器成功!\r\n");
             Connect_Status= 1;      //连接成功标志位
             MQTT_SubscribePack("/k08lcwgm0Ts/MQTTtest/user/get");
+            HAL_Delay(100);
             MQTT_SubscribePack("/ota/device/upgrade/k08lcwgm0Ts/MQTTtest");
-            HAL_Delay(500);
+            HAL_Delay(100);
+            MQTT_SubscribePack("/sys/k08lcwgm0Ts/MQTTtest/thing/file/download_reply");
+            HAL_Delay(100);
             MQTT_SendOTAVersion();  //发送当前OTA的版本
         }else{
             u1_printf("Connect服务器失败!\r\n");
@@ -143,10 +158,10 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
 
         //如果最后一个字节为0x00或者0x01代表发送成功
         if((data[datalen-1] == 0x00) || (data[datalen-1] == 0x01)){
-            u1_printf("Subscribe报文成功!\r\n");
+            u1_printf("Subscribe生效!\r\n");
             //MQTT_UnSubscribePack("/sys/k08lcwgm0Ts/MQTTtest/thing/service/property/set");
         }else{
-            u1_printf("Subscribe报文失败!\r\n");
+            u1_printf("Subscribe错误!\r\n");
             NVIC_SystemReset();
         }
     }
@@ -155,7 +170,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     else if(Connect_Status && (data[0] == 0xB0) && data[1] == 0x02)
     {
         u1_printf("收到UNSUBACK!\r\n");
-        u1_printf("UnSubscribe报文成功!\r\n");
+        u1_printf("UnSubscribe生效!\r\n");
     }
 
     //接收到等级0的Publish报文
@@ -175,6 +190,43 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
         }
 
         MQTT_GetOTAInfo((char*)Aliyun_mqtt.CMD_buff);
+
+        //收到download_reply,为bin文件的分片
+        if(strstr((const char*)Aliyun_mqtt.CMD_buff,"/sys/k08lcwgm0Ts/MQTTtest/thing/file/download_reply"))
+        {
+            u1_printf("一共%d字节\r\n",datalen);
+            for(int i = 0;i < datalen;i++)
+                u1_printf("%02x ",data[i]);
+            u1_printf("\r\n");
+
+            u1_printf("第%d字节处存放 %02x\r\n",(Aliyun_mqtt.num-1) * 256 + datalen - Aliyun_mqtt.downlen -2,data[datalen - Aliyun_mqtt.downlen -2]);
+            Flash_Write(Application_2_Addr + (Aliyun_mqtt.num-1) * 256,(uint32_t *)&data[datalen - Aliyun_mqtt.downlen -2],64);
+            Aliyun_mqtt.num++;
+            if(Aliyun_mqtt.num < Aliyun_mqtt.counter)
+            {
+                Aliyun_mqtt.downlen = 256;
+                MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
+            }
+            else if(Aliyun_mqtt.num == Aliyun_mqtt.counter)
+            {
+                if(Aliyun_mqtt.size % 256 == 0)
+                {
+                    Aliyun_mqtt.downlen = 256;
+                    MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
+                }
+                else
+                {
+                    Aliyun_mqtt.downlen = Aliyun_mqtt.size % 256;
+                    MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
+                }
+            }
+            else
+            {
+                u1_printf("OTA下载完毕!\r\n");
+                Code_Storage_Done();
+                NVIC_SystemReset();
+            }
+        }
     }
 
     //接收到PUBACK报文（QoS1）

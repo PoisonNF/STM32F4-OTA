@@ -34,3 +34,4 @@ b-boot-f4-app\dtu-4g.o: ../Core/Inc/usart.h
 b-boot-f4-app\dtu-4g.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 b-boot-f4-app\dtu-4g.o: ..\OTA\inc\dtu-4g.h
 b-boot-f4-app\dtu-4g.o: ..\OTA\inc\mqtt.h
+b-boot-f4-app\dtu-4g.o: ..\OTA\inc\ymodem.h

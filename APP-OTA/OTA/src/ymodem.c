@@ -90,7 +90,7 @@ static int Flash_Erase_Sector(uint32_t start_addr, uint32_t end_addr)
  * @param word_size  长度
  * @return NULL
  */
-static void Flash_Write(uint32_t addr,uint32_t *buf,uint32_t word_size)
+void Flash_Write(uint32_t addr,uint32_t *buf,uint32_t word_size)
 {
 	/* 解锁flash */
 	HAL_FLASH_Unlock();
@@ -116,6 +116,8 @@ void Code_Storage_Done(void)
 	Flash_Write((Application_2_Addr + Application_Size - 4), &update_flag,1 );   //在Bootloader中添加标记
 }
 
+
+#define POLY        0x1021  
 /**
  * @brief CRC-16 校验
  * @param addr 开始地址
