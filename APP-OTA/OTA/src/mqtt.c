@@ -38,7 +38,7 @@ void MQTT_ConnectPack(void)
     Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
 
     /* 固定报头 */
-    Aliyun_mqtt.Pack_buff[0] = 0x10;    //Connect报头
+    Aliyun_mqtt.Pack_buff[0] = CONNECT;    //Connect报头
 
     //判断剩余长度是一个字节还是两个字节
     MQTT_Remaining_Len_Process();
@@ -91,7 +91,7 @@ void MQTT_SubscribePack(char *topic)
     Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
 
     /* 固定报头 */
-    Aliyun_mqtt.Pack_buff[0] = 0x82;    //Subscrib报头
+    Aliyun_mqtt.Pack_buff[0] = SUBSCRIBE;    //Subscrib报头
 
     //判断剩余长度是一个字节还是两个字节
     MQTT_Remaining_Len_Process();
@@ -125,7 +125,7 @@ void MQTT_UnSubscribePack(char *topic)
     Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
 
     /* 固定报头 */
-    Aliyun_mqtt.Pack_buff[0] = 0xA0;    //UnSubscrib报头
+    Aliyun_mqtt.Pack_buff[0] = UNSUBSCRIBE;    //UnSubscrib报头
 
     //判断剩余长度是一个字节还是两个字节
     MQTT_Remaining_Len_Process();
@@ -180,7 +180,7 @@ void MQTT_PublishDataQos0(char *topic,char *data)
     Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
 
     /* 固定报头 */
-    Aliyun_mqtt.Pack_buff[0] = 0x30;    //PublishQs0报头
+    Aliyun_mqtt.Pack_buff[0] = PUBLISHQOS0;    //PublishQs0报头
 
     //判断剩余长度是一个字节还是两个字节
     MQTT_Remaining_Len_Process();
@@ -211,7 +211,7 @@ void MQTT_PublishDataQos1(char *topic,char *data)
     Aliyun_mqtt.Remaining_len = Aliyun_mqtt.Variable_len + Aliyun_mqtt.Payload_len;
 
     /* 固定报头 */
-    Aliyun_mqtt.Pack_buff[0] = 0x32;    //PublishQos1报头
+    Aliyun_mqtt.Pack_buff[0] = PUBLISHQOS1;    //PublishQos1报头
 
     //判断剩余长度是一个字节还是两个字节
     MQTT_Remaining_Len_Process();
@@ -232,59 +232,3 @@ void MQTT_PublishDataQos1(char *topic,char *data)
         u1_printf("PublishQos1报文发送成功!\r\n");
 }
 
-/**
- * @brief 发送当前OTA版本号
- * 
- */
-void MQTT_SendOTAVersion(void)
-{
-    char temp[128];
-
-    memset(temp,0,128);
-    sprintf(temp,"{\"id\": \"1\",\"params\": {\"version\": \"%s\"}}",VERSION);
-    MQTT_PublishDataQos1("/ota/device/inform/k08lcwgm0Ts/MQTTtest",temp);
-}
-
-/**
- * @brief 获取OTA固件信息
- * 
- * @param data 从服务器过来的报文
- */
-void MQTT_GetOTAInfo(char *data)
-{
-    if(sscanf(data,"/ota/device/upgrade/k08lcwgm0Ts/MQTTtest{\"code\":\"1000\",\"data\":{\"size\":%d,\"streamId\":%d,\"sign\":\"%*32s\",\"dProtocol\"  \
-        :\"mqtt\",\"version\":\"%3s\",\"signMethod\":\"Md5\",\"streamFileId\":1,\"md5\":\"%*32s\"},\"id\":%*d,\"message\":\"success\"}",
-        &Aliyun_mqtt.size,&Aliyun_mqtt.streamId,Aliyun_mqtt.OTA_VerTemp) == 3)
-    {
-        u1_printf("OTA固件大小:%d\r\n",Aliyun_mqtt.size);
-        u1_printf("OTA固件ID:%d\r\n",Aliyun_mqtt.streamId);
-        u1_printf("OTA固件版本:%s\r\n",Aliyun_mqtt.OTA_VerTemp);
-
-        //计算下载总量
-        if(Aliyun_mqtt.size%256 == 0){
-            Aliyun_mqtt.counter = Aliyun_mqtt.size/256;
-        }else{
-            Aliyun_mqtt.counter = Aliyun_mqtt.size/256 + 1;
-        }
-        //初始化
-        Aliyun_mqtt.num = 1;
-        Aliyun_mqtt.downlen = 256;
-        MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1)*256);
-    }
-}
-
-/**
- * @brief OTA分片下载
- * 
- * @param size 分片下载大小
- * @param offset 地址偏移
- */
-void MQTT_OTA_Download(int size,int offset)
-{
-    char temp[256];
-    memset(temp,0,256);
-    sprintf(temp,"{\"id\": \"1\",\"params\": {\"fileInfo\":{\"streamId\":%d,\"fileId\":1},\"fileBlock\":{\"size\":%d,\"offset\":%d}}}",Aliyun_mqtt.streamId,size,offset);
-    u1_printf("当前第%d/%d次\r\n",Aliyun_mqtt.num,Aliyun_mqtt.counter);
-    MQTT_PublishDataQos0("/sys/k08lcwgm0Ts/MQTTtest/thing/file/download",temp);
-    HAL_Delay(300);
-}

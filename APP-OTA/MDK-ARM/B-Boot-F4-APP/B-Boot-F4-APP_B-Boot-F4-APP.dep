@@ -1,6 +1,6 @@
 Dependencies for Project 'B-Boot-F4-APP', Target 'B-Boot-F4-APP': (DO NOT MODIFY !)
 F (startup_stm32f407xx.s)(0x650A5298)(--cpu Cortex-M4.fp -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 528" --pd "_RTE_ SETA 1" --pd "STM32F407xx SETA 1"--list startup_stm32f407xx.lst --xref -o b-boot-f4-app\startup_stm32f407xx.o --depend b-boot-f4-app\startup_stm32f407xx.d)
-F (../Core/Src/main.c)(0x650C0169)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\main.o --omf_browse b-boot-f4-app\main.crf --depend b-boot-f4-app\main.d)
+F (../Core/Src/main.c)(0x650D28C6)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\main.o --omf_browse b-boot-f4-app\main.crf --depend b-boot-f4-app\main.d)
 I (../Core/Inc/main.h)(0x650C46FD)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x65044F7E)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x650A5296)
@@ -31,11 +31,11 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
 I (../Core/Inc/dma.h)(0x65050960)
-I (../Core/Inc/usart.h)(0x650C002E)
+I (../Core/Inc/usart.h)(0x650D0331)
 I (../Core/Inc/gpio.h)(0x65050960)
 I (..\OTA\inc\ymodem.h)(0x650C2419)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5CEB79E2)
-I (..\OTA\inc\dtu-4g.h)(0x650BF24C)
+I (..\OTA\inc\dtu-4g.h)(0x650D2DC4)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x5CEB79E2)
 I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5CEB79E2)
 F (../Core/Src/gpio.c)(0x650A5295)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\gpio.o --omf_browse b-boot-f4-app\gpio.crf --depend b-boot-f4-app\gpio.d)
@@ -100,8 +100,8 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h)(0x65044F7E
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
-F (../Core/Src/usart.c)(0x650C0022)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\usart.o --omf_browse b-boot-f4-app\usart.crf --depend b-boot-f4-app\usart.d)
-I (../Core/Inc/usart.h)(0x650C002E)
+F (../Core/Src/usart.c)(0x650D0309)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\usart.o --omf_browse b-boot-f4-app\usart.crf --depend b-boot-f4-app\usart.d)
+I (../Core/Inc/usart.h)(0x650D0331)
 I (../Core/Inc/main.h)(0x650C46FD)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x65044F7E)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x650A5296)
@@ -134,9 +134,9 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5CEB79E4)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5CEB79E2)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x5CEB79E2)
-I (..\OTA\inc\dtu-4g.h)(0x650BF24C)
+I (..\OTA\inc\dtu-4g.h)(0x650D2DC4)
 I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5CEB79E2)
-F (../Core/Src/stm32f4xx_it.c)(0x650C0043)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\stm32f4xx_it.o --omf_browse b-boot-f4-app\stm32f4xx_it.crf --depend b-boot-f4-app\stm32f4xx_it.d)
+F (../Core/Src/stm32f4xx_it.c)(0x650D28B0)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\stm32f4xx_it.o --omf_browse b-boot-f4-app\stm32f4xx_it.crf --depend b-boot-f4-app\stm32f4xx_it.d)
 I (../Core/Inc/main.h)(0x650C46FD)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x65044F7E)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x650A5296)
@@ -168,8 +168,8 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
 I (../Core/Inc/stm32f4xx_it.h)(0x650A5296)
 I (..\OTA\inc\ymodem.h)(0x650C2419)
-I (..\OTA\inc\dtu-4g.h)(0x650BF24C)
-I (../Core/Inc/usart.h)(0x650C002E)
+I (..\OTA\inc\dtu-4g.h)(0x650D2DC4)
+I (../Core/Inc/usart.h)(0x650D0331)
 F (../Core/Src/stm32f4xx_hal_msp.c)(0x65050961)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\stm32f4xx_hal_msp.o --omf_browse b-boot-f4-app\stm32f4xx_hal_msp.crf --depend b-boot-f4-app\stm32f4xx_hal_msp.d)
 I (../Core/Inc/main.h)(0x650C46FD)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x65044F7E)
@@ -693,7 +693,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h)(0x65044F7E
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
-F (..\OTA\src\dtu-4g.c)(0x650C4F24)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\dtu-4g.o --omf_browse b-boot-f4-app\dtu-4g.crf --depend b-boot-f4-app\dtu-4g.d)
+F (..\OTA\src\dtu-4g.c)(0x650D2DE0)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\dtu-4g.o --omf_browse b-boot-f4-app\dtu-4g.crf --depend b-boot-f4-app\dtu-4g.d)
 I (../Core/Inc/main.h)(0x650C46FD)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x65044F7E)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x650A5296)
@@ -724,12 +724,12 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5CEB79E2)
-I (../Core/Inc/usart.h)(0x650C002E)
+I (../Core/Inc/usart.h)(0x650D0331)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x5CEB79E2)
-I (..\OTA\inc\dtu-4g.h)(0x650BF24C)
-I (..\OTA\inc\mqtt.h)(0x650C1FCC)
+I (..\OTA\inc\dtu-4g.h)(0x650D2DC4)
+I (..\OTA\inc\mqtt.h)(0x650D2E52)
 I (..\OTA\inc\ymodem.h)(0x650C2419)
-F (..\OTA\src\mqtt.c)(0x650C4CCA)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\mqtt.o --omf_browse b-boot-f4-app\mqtt.crf --depend b-boot-f4-app\mqtt.d)
+F (..\OTA\src\mqtt.c)(0x650D2D99)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\mqtt.o --omf_browse b-boot-f4-app\mqtt.crf --depend b-boot-f4-app\mqtt.d)
 I (../Core/Inc/main.h)(0x650C46FD)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x65044F7E)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x650A5296)
@@ -760,10 +760,10 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5CEB79E2)
-I (../Core/Inc/usart.h)(0x650C002E)
+I (../Core/Inc/usart.h)(0x650D0331)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x5CEB79E2)
-I (..\OTA\inc\mqtt.h)(0x650C1FCC)
-I (..\OTA\inc\dtu-4g.h)(0x650BF24C)
+I (..\OTA\inc\mqtt.h)(0x650D2E52)
+I (..\OTA\inc\dtu-4g.h)(0x650D2DC4)
 F (..\OTA\src\ymodem.c)(0x650C24FE)(--c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\OTA\inc-I.\RTE\_B-Boot-F4-APP-ID:\Keil_v5\ARM\CMSIS\5.5.1\CMSIS\Core\Include-ID:\Keil_v5\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx-o b-boot-f4-app\ymodem.o --omf_browse b-boot-f4-app\ymodem.crf --depend b-boot-f4-app\ymodem.d)
 I (..\OTA\inc\ymodem.h)(0x650C2419)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x65044F7E)
@@ -796,5 +796,5 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x65044F7E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x65044F7E)
 I (../Core/Inc/main.h)(0x650C46FD)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5CEB79E2)
-I (../Core/Inc/usart.h)(0x650C002E)
+I (../Core/Inc/usart.h)(0x650D0331)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x5CEB79E2)

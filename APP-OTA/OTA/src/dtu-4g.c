@@ -132,7 +132,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     }
 
     //接收到CONNACK报文
-    else if((datalen == 4) && (data[0] == 0x20))
+    else if((datalen == 4) && (data[0] == CONNACK))
     {
         u1_printf("收到CONNACK!\r\n");
         if(data[3] == 0x00){
@@ -144,7 +144,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
             HAL_Delay(100);
             MQTT_SubscribePack("/sys/k08lcwgm0Ts/MQTTtest/thing/file/download_reply");
             HAL_Delay(100);
-            MQTT_SendOTAVersion();  //发送当前OTA的版本
+            DTU_SendOTAVersion();  //发送当前OTA的版本
         }else{
             u1_printf("Connect服务器失败!\r\n");
             NVIC_SystemReset();
@@ -152,14 +152,14 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     }
 
     //接收到SUBACK报文
-    else if(Connect_Status &&(datalen == 5) && (data[0] == 0x90))
+    else if(Connect_Status &&(datalen == 5) && (data[0] == SUBACK))
     {
         u1_printf("收到SUBACK!\r\n");
 
         //如果最后一个字节为0x00或者0x01代表发送成功
         if((data[datalen-1] == 0x00) || (data[datalen-1] == 0x01)){
             u1_printf("Subscribe生效!\r\n");
-            //MQTT_UnSubscribePack("/sys/k08lcwgm0Ts/MQTTtest/thing/service/property/set");
+            //MQTT_UnSubscribePack("/k08lcwgm0Ts/MQTTtest/user/get");
         }else{
             u1_printf("Subscribe错误!\r\n");
             NVIC_SystemReset();
@@ -167,14 +167,14 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     }
 
     //接收到UNSUBACK报文
-    else if(Connect_Status && (data[0] == 0xB0) && data[1] == 0x02)
+    else if(Connect_Status && (data[0] == UNSUBACK) && data[1] == 0x02)
     {
         u1_printf("收到UNSUBACK!\r\n");
         u1_printf("UnSubscribe生效!\r\n");
     }
 
     //接收到等级0的Publish报文
-    else if(Connect_Status && (data[0] == 0x30))
+    else if(Connect_Status && (data[0] == PUBLISHQOS0))
     {
         u1_printf("收到等级0的Publish报文!\r\n");
         MQTT_DealPublishData(data,datalen);
@@ -189,7 +189,8 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
             MQTT_PublishDataQos0("/k08lcwgm0Ts/MQTTtest/user/post","{\"params\":}{\"switch1\":1}");
         }
 
-        MQTT_GetOTAInfo((char*)Aliyun_mqtt.CMD_buff);
+        if(strstr((const char*)Aliyun_mqtt.CMD_buff,"upgrade"))
+            DTU_GetOTAInfo((char*)Aliyun_mqtt.CMD_buff);
 
         //收到download_reply,为bin文件的分片
         if(strstr((const char*)Aliyun_mqtt.CMD_buff,"/sys/k08lcwgm0Ts/MQTTtest/thing/file/download_reply"))
@@ -205,19 +206,19 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
             if(Aliyun_mqtt.num < Aliyun_mqtt.counter)
             {
                 Aliyun_mqtt.downlen = 256;
-                MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
+                DTU_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
             }
             else if(Aliyun_mqtt.num == Aliyun_mqtt.counter)
             {
                 if(Aliyun_mqtt.size % 256 == 0)
                 {
                     Aliyun_mqtt.downlen = 256;
-                    MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
+                    DTU_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
                 }
                 else
                 {
                     Aliyun_mqtt.downlen = Aliyun_mqtt.size % 256;
-                    MQTT_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
+                    DTU_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1) * 256);
                 }
             }
             else
@@ -230,15 +231,106 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     }
 
     //接收到PUBACK报文（QoS1）
-    else if(Connect_Status && (data[0] == 0x40))
+    else if(Connect_Status && (data[0] == PUBACK))
     {
         u1_printf("收到PUBACK!\r\n");
     }
 
     //接收到d0 00 代表设备保活
-    else if(Connect_Status && (datalen == 2) && (data[0] == 0xd0) && (data[1] == 0x00))
+    else if(Connect_Status && (datalen == 2) && (data[0] == PINGRESP) && (data[1] == 0x00))
     {
         u1_printf("设备存活!\r\n");
     }
+}
+
+/**
+ * @brief 发送当前OTA版本号
+ * 
+ */
+void DTU_SendOTAVersion(void)
+{
+    char temp[128];
+
+    memset(temp,0,128);
+    sprintf(temp,"{\"id\": \"1\",\"params\": {\"version\": \"%s\"}}",VERSION);
+    MQTT_PublishDataQos1("/ota/device/inform/k08lcwgm0Ts/MQTTtest",temp);
+}
+
+/**
+ * @brief 获取OTA固件信息
+ * 
+ * @param data 从服务器过来的报文
+ */
+void DTU_GetOTAInfo(char *data)
+{
+    if(sscanf(data,"/ota/device/upgrade/k08lcwgm0Ts/MQTTtest{\"code\":\"1000\",\"data\":{\"size\":%d,\"streamId\":%d,\"sign\":\"%*32s\",\"dProtocol\"  \
+        :\"mqtt\",\"version\":\"%3s\",\"signMethod\":\"Md5\",\"streamFileId\":1,\"md5\":\"%*32s\"},\"id\":%*d,\"message\":\"success\"}",
+        &Aliyun_mqtt.size,&Aliyun_mqtt.streamId,Aliyun_mqtt.OTA_VerTemp) == 3)
+    {
+        u1_printf("OTA固件大小:%d\r\n",Aliyun_mqtt.size);
+        u1_printf("OTA固件ID:%d\r\n",Aliyun_mqtt.streamId);
+        u1_printf("OTA固件版本:%s\r\n",Aliyun_mqtt.OTA_VerTemp);
+
+        //计算下载总量
+        if(Aliyun_mqtt.size%256 == 0){
+            Aliyun_mqtt.counter = Aliyun_mqtt.size/256;
+        }else{
+            Aliyun_mqtt.counter = Aliyun_mqtt.size/256 + 1;
+        }
+        //初始化
+        Aliyun_mqtt.num = 1;
+        Aliyun_mqtt.downlen = 256;
+        DTU_OTA_Download(Aliyun_mqtt.downlen,(Aliyun_mqtt.num-1)*256);
+    }
+    else
+    {
+        u1_printf("提取OTA固件信息失败!\r\n");
+    }
+}
+
+/**
+ * @brief OTA分片下载
+ * 
+ * @param size 分片下载大小
+ * @param offset 地址偏移
+ */
+void DTU_OTA_Download(int size,int offset)
+{
+    char temp[256];
+
+    memset(temp,0,256);
+    sprintf(temp,"{\"id\": \"1\",\"params\": {\"fileInfo\":{\"streamId\":%d,\"fileId\":1},\"fileBlock\":{\"size\":%d,\"offset\":%d}}}",Aliyun_mqtt.streamId,size,offset);
+    u1_printf("当前第%d/%d次\r\n",Aliyun_mqtt.num,Aliyun_mqtt.counter);
+    MQTT_PublishDataQos0("/sys/k08lcwgm0Ts/MQTTtest/thing/file/download",temp);
+    HAL_Delay(300);
+}
+
+/**
+ * @brief DTU工作函数
+ * 
+ */
+void DTU_Working(void)
+{
+    uint8_t DataBuf[512];
+    uint16_t DataLen;
+
+    /* 如果4g模块的串口接收到数据 */
+	if(usart_info.ucDMARxCplt)
+	{
+		usart_info.ucDMARxCplt = 0;	//标志位清零
+
+		//数据拷贝
+		memcpy(DataBuf,usart_info.ucpDMARxCache,usart_info.usDMARxLength);
+		DataLen = usart_info.usDMARxLength;
+
+		// for(int i = 0;i<DataLen;i++)
+		//  	u1_printf("%02x ",DataBuf[i]);
+		//  u1_printf("\r\n");
+		//u1_printf("%s",DataBuf);
+		//u1_printf("%d\r\n",DataLen);
+
+		//处理DTU数据
+		DTU_Usart_Event(DataBuf,DataLen);
+	}
 }
 

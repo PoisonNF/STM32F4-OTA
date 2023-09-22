@@ -47,7 +47,7 @@ static uint8_t USART3_TX_BUF[200];
 /* DTU串口信息结构体 */
 typedef struct {
 
-    /* DMA相关信息 */
+  /* DMA相关信息 */
 	uint16_t			usDMARxLength;			/* DMA总接收数据长度(DMA使用) */
 	uint16_t			usDMARxMAXSize;			/* DMA接收缓冲区大小(DMA使用) */
 	uint8_t				*ucpDMARxCache;			/* DMA接收缓冲区(DMA使用) */

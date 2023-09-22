@@ -33,7 +33,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+//#define USE_YMODEM        //使用串口进行升级
+#define USE_DTU_4G      //使用DTU4G模块进行升级
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -48,8 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t DataBuf[512];
-uint16_t DataLen;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -109,33 +109,22 @@ int main(void)
 	u1_printf("*                                 *\r\n");
 	u1_printf("***********************************\r\n");
 
+#ifdef USE_DTU_4G
 	/* 进入指令模式，设置服务器信息 */
 	DTU_Enter_CMD();
-	while (1)
+#endif
+
+  	while (1)
 	{
-		/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
-
-		//YModem_Update();
-		/* 如果4g模块的串口接收到数据 */
-		if(usart_info.ucDMARxCplt)
-		{
-			usart_info.ucDMARxCplt = 0;	//标志位清零
-
-			//数据拷贝
-			memcpy(DataBuf,usart_info.ucpDMARxCache,usart_info.usDMARxLength);
-			DataLen = usart_info.usDMARxLength;
-
-			// for(int i = 0;i<DataLen;i++)
-			//  	u1_printf("%02x ",DataBuf[i]);
-			//  u1_printf("\r\n");
-			//u1_printf("%s",DataBuf);
-			//u1_printf("%d\r\n",DataLen);
-
-			//处理DTU数据
-			DTU_Usart_Event(DataBuf,DataLen);
-		}
+    /* USER CODE BEGIN 3 */
+#ifdef USE_YMODEM
+        YModem_Update();
+#endif
+#ifdef USE_DTU_4G
+        DTU_Working();
+#endif
 	}
 	/* USER CODE END 3 */
 }
