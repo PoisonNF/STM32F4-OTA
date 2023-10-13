@@ -113,7 +113,7 @@ void Flash_Write(uint32_t addr,uint32_t *buf,uint32_t word_size)
 void Code_Storage_Done(void)
 {
 	uint32_t update_flag = Startup_Update;				// 对应bootloader的启动步骤
-	Flash_Write((Application_2_Addr + Application_Size - 4), &update_flag,1 );   //在Bootloader中添加标记
+	Flash_Write((Application_2_Addr + Application_Size - 4), &update_flag,1 );   //在APP2中添加标记
 }
 
 

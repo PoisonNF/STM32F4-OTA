@@ -9,6 +9,8 @@
                 "e:\\Desktop\\STM32F4-OTA\\APP-OTA\\Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include",
                 "e:\\Desktop\\STM32F4-OTA\\APP-OTA\\Drivers\\CMSIS\\Include",
                 "e:\\Desktop\\STM32F4-OTA\\APP-OTA\\OTA\\inc",
+                "D:\\Keil_v5\\ARM\\ARMCC\\include",
+                "D:\\Keil_v5\\ARM\\ARMCC\\include\\rw",
                 "e:\\Desktop\\STM32F4-OTA\\APP-OTA\\MDK-ARM",
                 "e:\\Desktop\\STM32F4-OTA\\APP-OTA\\Core\\Src",
                 "e:\\Desktop\\STM32F4-OTA\\APP-OTA\\Drivers\\STM32F4xx_HAL_Driver\\Src",
