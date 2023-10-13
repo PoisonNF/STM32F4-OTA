@@ -106,6 +106,18 @@ void Flash_Write(uint32_t addr,uint32_t *buf,uint32_t word_size)
 }
 
 /**
+ * @brief flash读若干个数据(word)
+ * @param addr       读数据的地址
+ * @param buf        读出数据的数组指针
+ * @param word_size  长度
+ * @return 
+ */
+void Flash_Read(uint32_t addr, uint32_t *buf,uint32_t word_size)
+{
+	memcpy(buf, (uint32_t*) addr, word_size * sizeof(uint32_t));
+}
+
+/**
  * @brief 标记App2区代码存放完成
  * @param NULL
  * @return NULL

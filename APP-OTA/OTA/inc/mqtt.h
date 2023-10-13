@@ -14,11 +14,11 @@
 #endif
 
 /* D001信息 */
-#define CLIENTID        "k08lcwgm0Ts.D001|securemode=2,signmethod=hmacsha256,timestamp=1697173381876|"
-#define USERNAME        "D001&k08lcwgm0Ts"
-#define PASSWORD        "9df018077e0841352c66b83facc2c9b866f85db233e25d18f9bfc9b9e2d61470"
-#define PRODUCTKEY      "k08lcwgm0Ts"
-#define DEVICENNAME     "D001"
+// #define CLIENTID        "k08lcwgm0Ts.D001|securemode=2,signmethod=hmacsha256,timestamp=1697173381876|"
+// #define USERNAME        "D001&k08lcwgm0Ts"
+// #define PASSWORD        "9df018077e0841352c66b83facc2c9b866f85db233e25d18f9bfc9b9e2d61470"
+// #define PRODUCTKEY      "k08lcwgm0Ts"
+// #define DEVICENNAME     "D001"
 
 /* 控制报头 */
 #define CONNECT         0x10

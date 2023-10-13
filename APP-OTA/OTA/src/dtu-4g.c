@@ -5,11 +5,14 @@
 #include "dtu-4g.h"
 #include "mqtt.h"
 #include "ymodem.h"
+#include "sort.h"
 
 /* 用于标记是否连接上服务器 */
 static uint8_t Connect_Status = 0; 
 /* 用于对不同设备拼接报文 */
 static char MessageTemp[100];
+
+extern struct DeviceInfo Dev;
 
 /**
  * @brief DTU进入指令模式
@@ -129,6 +132,8 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     //配置服务器完成
     else if(!memcmp(data,"USR-DR152",sizeof("USR-DR152")))
     {
+        Sort_DeviceInfo();          //根据bootloader读取设备信息
+        u1_printf("本设备名为%s\r\n",Dev.DeviceName);
         u1_printf("Connect服务器...\r\n");
         MQTT_ConnectPack();
     }
@@ -139,19 +144,19 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
         u1_printf("收到CONNACK!\r\n");
         if(data[3] == 0x00){
             u1_printf("Connect服务器成功!\r\n");
-            Connect_Status= 1;      //连接成功标志位
+            Connect_Status = 1;      //连接成功标志位
 
-            sprintf(MessageTemp,"/%s/%s/user/get",PRODUCTKEY,DEVICENNAME);
+            sprintf(MessageTemp,"/%s/%s/user/get",Dev.ProductKey,Dev.DeviceName);
             MQTT_SubscribePack(MessageTemp);
             memset(MessageTemp,0,sizeof(MessageTemp));
             HAL_Delay(100);
 
-            sprintf(MessageTemp,"/ota/device/upgrade/%s/%s",PRODUCTKEY,DEVICENNAME);
+            sprintf(MessageTemp,"/ota/device/upgrade/%s/%s",Dev.ProductKey,Dev.DeviceName);
             MQTT_SubscribePack(MessageTemp);
             memset(MessageTemp,0,sizeof(MessageTemp));
             HAL_Delay(100);
 
-            sprintf(MessageTemp,"/sys/%s/%s/thing/file/download_reply",PRODUCTKEY,DEVICENNAME);
+            sprintf(MessageTemp,"/sys/%s/%s/thing/file/download_reply",Dev.ProductKey,Dev.DeviceName);
             MQTT_SubscribePack(MessageTemp);
             memset(MessageTemp,0,sizeof(MessageTemp));
             HAL_Delay(100);
@@ -206,7 +211,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
             DTU_GetOTAInfo((char*)Aliyun_mqtt.CMD_buff);
 
         //收到download_reply,为bin文件的分片
-        sprintf(MessageTemp,"/sys/%s/%s/thing/file/download_reply",PRODUCTKEY,DEVICENNAME);
+        sprintf(MessageTemp,"/sys/%s/%s/thing/file/download_reply",Dev.ProductKey,Dev.DeviceName);
         if(strstr((const char*)Aliyun_mqtt.CMD_buff,MessageTemp))
         {
             u1_printf("一共%d字节\r\n",datalen);
@@ -268,7 +273,7 @@ void DTU_SendOTAVersion(void)
 
     memset(temp,0,128);
 
-    sprintf(MessageTemp,"/ota/device/inform/%s/%s",PRODUCTKEY,DEVICENNAME);
+    sprintf(MessageTemp,"/ota/device/inform/%s/%s",Dev.ProductKey,Dev.DeviceName);
     MQTT_PublishDataQos1(MessageTemp,temp);
     memset(MessageTemp,0,sizeof(MessageTemp));
 }
@@ -318,7 +323,7 @@ void DTU_OTA_Download(int size,int offset)
     memset(temp,0,256);
     sprintf(temp,"{\"id\": \"1\",\"params\": {\"fileInfo\":{\"streamId\":%d,\"fileId\":1},\"fileBlock\":{\"size\":%d,\"offset\":%d}}}",Aliyun_mqtt.streamId,size,offset);
     u1_printf("当前第%d/%d次\r\n",Aliyun_mqtt.num,Aliyun_mqtt.counter);
-    sprintf(MessageTemp,"/sys/%s/%s/thing/file/download",PRODUCTKEY,DEVICENNAME);
+    sprintf(MessageTemp,"/sys/%s/%s/thing/file/download",Dev.ProductKey,Dev.DeviceName);
     MQTT_PublishDataQos0(MessageTemp,temp);
     HAL_Delay(300);
 }
