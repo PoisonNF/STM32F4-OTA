@@ -141,15 +141,15 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     //接收到CONNACK报文
     else if((datalen == 4) && (data[0] == CONNACK))
     {
-        u1_printf("收到CONNACK!\r\n");
+        //u1_printf("收到CONNACK!\r\n");
         if(data[3] == 0x00){
             u1_printf("Connect服务器成功!\r\n");
             Connect_Status = 1;      //连接成功标志位
 
-            sprintf(MessageTemp,"/%s/%s/user/get",Dev.ProductKey,Dev.DeviceName);
-            MQTT_SubscribePack(MessageTemp);
-            memset(MessageTemp,0,sizeof(MessageTemp));
-            HAL_Delay(100);
+            // sprintf(MessageTemp,"/%s/%s/user/get",Dev.ProductKey,Dev.DeviceName);
+            // MQTT_SubscribePack(MessageTemp);
+            // memset(MessageTemp,0,sizeof(MessageTemp));
+            // HAL_Delay(100);
 
             sprintf(MessageTemp,"/ota/device/upgrade/%s/%s",Dev.ProductKey,Dev.DeviceName);
             MQTT_SubscribePack(MessageTemp);
@@ -161,7 +161,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
             memset(MessageTemp,0,sizeof(MessageTemp));
             HAL_Delay(100);
 
-            DTU_SendOTAVersion();  //发送当前OTA的版本
+            DTU_SendOTAVersion();  //向服务器上报当前OTA的版本
         }else{
             u1_printf("Connect服务器失败!\r\n");
             NVIC_SystemReset();
@@ -171,7 +171,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     //接收到SUBACK报文
     else if(Connect_Status &&(datalen == 5) && (data[0] == SUBACK))
     {
-        u1_printf("收到SUBACK!\r\n");
+        //u1_printf("收到SUBACK!\r\n");
 
         //如果最后一个字节为0x00或者0x01代表发送成功
         if((data[datalen-1] == 0x00) || (data[datalen-1] == 0x01)){
@@ -186,7 +186,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
     //接收到UNSUBACK报文
     else if(Connect_Status && (data[0] == UNSUBACK) && data[1] == 0x02)
     {
-        u1_printf("收到UNSUBACK!\r\n");
+        //u1_printf("收到UNSUBACK!\r\n");
         u1_printf("UnSubscribe生效!\r\n");
     }
 
@@ -214,12 +214,12 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
         sprintf(MessageTemp,"/sys/%s/%s/thing/file/download_reply",Dev.ProductKey,Dev.DeviceName);
         if(strstr((const char*)Aliyun_mqtt.CMD_buff,MessageTemp))
         {
-            u1_printf("一共%d字节\r\n",datalen);
-            for(int i = 0;i < datalen;i++)
-                u1_printf("%02x ",data[i]);
-            u1_printf("\r\n");
+            // u1_printf("一共%d字节\r\n",datalen);
+            // for(int i = 0;i < datalen;i++)
+            //     u1_printf("%02x ",data[i]);
+            // u1_printf("\r\n");
 
-            u1_printf("第%d字节处存放 %02x\r\n",(Aliyun_mqtt.num-1) * 256 + datalen - Aliyun_mqtt.downlen -2,data[datalen - Aliyun_mqtt.downlen -2]);
+            //u1_printf("第%d字节处存放 %02x\r\n",(Aliyun_mqtt.num-1) * 256 + datalen - Aliyun_mqtt.downlen -2,data[datalen - Aliyun_mqtt.downlen -2]);
             Flash_Write(Application_2_Addr + (Aliyun_mqtt.num-1) * 256,(uint32_t *)&data[datalen - Aliyun_mqtt.downlen -2],64);
             Aliyun_mqtt.num++;
             if(Aliyun_mqtt.num < Aliyun_mqtt.counter)
@@ -264,7 +264,7 @@ void DTU_Usart_Event(uint8_t *data,uint16_t datalen)
 }
 
 /**
- * @brief 发送当前OTA版本号
+ * @brief 向服务器上报当前OTA的版本
  * 
  */
 void DTU_SendOTAVersion(void)
@@ -272,10 +272,12 @@ void DTU_SendOTAVersion(void)
     char temp[128];
 
     memset(temp,0,128);
+    sprintf(temp,"{\"id\": \"1\",\"params\": {\"version\": \"%s\"}}",VERSION);  //拼接版本号信息
+    sprintf(MessageTemp,"/ota/device/inform/%s/%s",Dev.ProductKey,Dev.DeviceName);  //拼接发布信息
 
-    sprintf(MessageTemp,"/ota/device/inform/%s/%s",Dev.ProductKey,Dev.DeviceName);
     MQTT_PublishDataQos1(MessageTemp,temp);
     memset(MessageTemp,0,sizeof(MessageTemp));
+    u1_printf("上报版本号：%s\r\n",VERSION);
 }
 
 /**
@@ -285,7 +287,7 @@ void DTU_SendOTAVersion(void)
  */
 void DTU_GetOTAInfo(char *data)
 {
-    if(sscanf(data,"/ota/device/upgrade/%*11[^/]/%*19s{\"code\":\"1000\",\"data\":{\"size\":%d,\"streamId\":%d,\"sign\":\"%*32s\",\"dProtocol\"  \
+    if(sscanf(data,"/ota/device/upgrade/%*15[^/]/%*15[^{]{\"code\":\"1000\",\"data\":{\"size\":%d,\"streamId\":%d,\"sign\":\"%*32s\",\"dProtocol\"  \
         :\"mqtt\",\"version\":\"%3s\",\"signMethod\":\"Md5\",\"streamFileId\":1,\"md5\":\"%*32s\"},\"id\":%*d,\"message\":\"success\"}",
         &Aliyun_mqtt.size,&Aliyun_mqtt.streamId,Aliyun_mqtt.OTA_VerTemp) == 3)
     {
